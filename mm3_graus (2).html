@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>M&M3 — Testes Graduados</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0e0e12;
+    --surface: #16161c;
+    --surface2: #1e1e27;
+    --border: rgba(255,255,255,0.08);
+    --accent: #e8c84a;
+    --text: #f0eeea;
+    --muted: #888;
+    --success: #4cba7a;
+    --success-bg: rgba(76,186,122,0.12);
+    --success-border: rgba(76,186,122,0.3);
+    --warn: #e8964a;
+    --warn-bg: rgba(232,150,74,0.12);
+    --warn-border: rgba(232,150,74,0.3);
+    --danger: #e85a5a;
+    --danger-bg: rgba(232,90,90,0.12);
+    --danger-border: rgba(232,90,90,0.3);
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 2rem 1rem 4rem;
+  }
+
+  header { text-align: center; margin-bottom: 2.5rem; }
+
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(2.8rem, 8vw, 5rem);
+    letter-spacing: 0.04em;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  header p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-top: 0.4rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 1.5rem;
+    width: 100%;
+    max-width: 480px;
+  }
+
+  .inputs {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 1rem;
+  }
+
+  label {
+    display: block;
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 6px;
+  }
+
+  input[type="number"] {
+    width: 100%;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 12px 14px;
+    font-size: 1.4rem;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 0.05em;
+    color: var(--text);
+    outline: none;
+    transition: border-color 0.2s;
+    -moz-appearance: textfield;
+  }
+  input[type="number"]::-webkit-inner-spin-button,
+  input[type="number"]::-webkit-outer-spin-button { -webkit-appearance: none; }
+  input[type="number"]:focus { border-color: var(--accent); }
+
+  .toggle-combate {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 1rem;
+    cursor: pointer;
+    user-select: none;
+    width: fit-content;
+  }
+
+  .toggle-combate input[type="checkbox"] {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    min-width: 18px;
+    border: 1px solid rgba(255,255,255,0.25);
+    border-radius: 5px;
+    background: var(--surface2);
+    cursor: pointer;
+    position: relative;
+    transition: background 0.2s, border-color 0.2s;
+  }
+
+  .toggle-combate input[type="checkbox"]:checked {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .toggle-combate input[type="checkbox"]:checked::after {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 1px;
+    width: 5px;
+    height: 9px;
+    border: 2px solid #0e0e12;
+    border-top: none;
+    border-left: none;
+    transform: rotate(45deg);
+  }
+
+  .toggle-combate span {
+    font-size: 0.8rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+
+  .roll-btn {
+    width: 100%;
+    padding: 14px;
+    background: var(--accent);
+    color: #0e0e12;
+    border: none;
+    border-radius: 10px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.08em;
+    cursor: pointer;
+    transition: transform 0.1s, opacity 0.2s;
+    margin-bottom: 1.25rem;
+  }
+  .roll-btn:hover { opacity: 0.9; }
+  .roll-btn:active { transform: scale(0.98); }
+
+  .result-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+
+  .result-cell {
+    background: var(--surface2);
+    border-radius: 10px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+
+  .result-cell .cell-label {
+    font-size: 0.7rem;
+    color: var(--muted);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 4px;
+  }
+
+  .result-cell .cell-val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.04em;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .result-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: var(--muted);
+    padding: 8px 2px;
+    margin-bottom: 12px;
+  }
+
+  .result-meta span { color: var(--text); font-weight: 500; }
+
+  .grau-card {
+    border-radius: 12px;
+    padding: 1.25rem;
+    text-align: center;
+    border: 1px solid var(--border);
+    transition: background 0.3s, border-color 0.3s;
+  }
+
+  .grau-card .grau-label {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 6px;
+    opacity: 0.8;
+  }
+
+  .grau-card .grau-nome {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2.2rem;
+    letter-spacing: 0.05em;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+
+  .grau-card .grau-desc { font-size: 0.8rem; opacity: 0.7; }
+
+  .grau-card.success { background: var(--success-bg); border-color: var(--success-border); color: var(--success); }
+  .grau-card.warn    { background: var(--warn-bg);    border-color: var(--warn-border);    color: var(--warn); }
+  .grau-card.danger  { background: var(--danger-bg);  border-color: var(--danger-border);  color: var(--danger); }
+
+  #resultado { display: none; }
+
+  .dano-card {
+    margin-top: 10px;
+    border-radius: 12px;
+    padding: 1rem 1.25rem;
+    display: none;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .dano-card.sem-dano { background: var(--success-bg); border: 1px solid var(--success-border); }
+  .dano-card.com-dano { background: var(--danger-bg);  border: 1px solid var(--danger-border); }
+
+  .dano-titulo {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+    opacity: 0.7;
+  }
+
+  .dano-card.sem-dano .dano-titulo { color: var(--success); }
+  .dano-card.com-dano .dano-titulo { color: var(--danger); }
+
+  .dano-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 2rem;
+    letter-spacing: 0.04em;
+    line-height: 1;
+  }
+
+  .dano-card.sem-dano .dano-num { color: var(--success); }
+  .dano-card.com-dano .dano-num { color: var(--danger); }
+
+  .dano-formula {
+    font-size: 0.78rem;
+    text-align: right;
+    line-height: 1.6;
+    opacity: 0.6;
+    white-space: pre-line;
+  }
+
+  .dano-card.sem-dano .dano-formula { color: var(--success); }
+  .dano-card.com-dano .dano-formula { color: var(--danger); }
+
+  /* --- Historico --- */
+  .historico-wrap {
+    width: 100%;
+    max-width: 480px;
+    margin-top: 1.5rem;
+  }
+
+  .historico-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .historico-titulo {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+  }
+
+  .limpar-btn {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: color 0.2s;
+  }
+  .limpar-btn:hover { color: var(--danger); }
+
+  #historico-lista { display: flex; flex-direction: column; gap: 6px; }
+
+  .hist-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 12px;
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-4px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .hist-hora {
+    font-size: 0.7rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    min-width: 38px;
+  }
+
+  .hist-meio {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .hist-grau {
+    font-size: 0.85rem;
+    font-weight: 500;
+  }
+
+  .hist-detalhe {
+    font-size: 0.72rem;
+    color: var(--muted);
+  }
+
+  .hist-total {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 1.4rem;
+    letter-spacing: 0.04em;
+    text-align: right;
+    line-height: 1;
+  }
+
+  .hist-dano {
+    font-size: 0.7rem;
+    text-align: right;
+    opacity: 0.6;
+  }
+
+  .hist-item.hs .hist-grau  { color: var(--success); }
+  .hist-item.hs .hist-total { color: var(--success); }
+  .hist-item.hw .hist-grau  { color: var(--warn); }
+  .hist-item.hw .hist-total { color: var(--warn); }
+  .hist-item.hd .hist-grau  { color: var(--danger); }
+  .hist-item.hd .hist-total { color: var(--danger); }
+
+  .hist-vazio {
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--muted);
+    padding: 1.5rem 0;
+    opacity: 0.5;
+  }
+
+  footer {
+    margin-top: 3rem;
+    font-size: 0.75rem;
+    color: var(--muted);
+    text-align: center;
+    opacity: 0.5;
+  }
+
+  @media (max-width: 400px) {
+    .result-cell .cell-val { font-size: 1.6rem; }
+    .grau-card .grau-nome { font-size: 1.8rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Testes Graduados</h1>
+  <p>Mutantes &amp; Malfeitores 3&ordf; Edi&ccedil;&atilde;o</p>
+</header>
+
+<div class="card">
+  <div class="inputs">
+    <div>
+      <label for="bonus">B&ocirc;nus</label>
+      <input type="number" id="bonus" value="0" />
+    </div>
+    <div>
+      <label for="cd">CD</label>
+      <input type="number" id="cd" value="15" />
+    </div>
+  </div>
+
+  <label class="toggle-combate">
+    <input type="checkbox" id="modo-combate" />
+    <span>Teste de combate &mdash; calcular dano</span>
+  </label>
+
+  <button class="roll-btn" onclick="rolar()">&#9860; Rolar d20</button>
+
+  <div id="resultado">
+    <div class="result-row">
+      <div class="result-cell">
+        <div class="cell-label">Dado</div>
+        <div class="cell-val" id="dado-val">&mdash;</div>
+      </div>
+      <div class="result-cell">
+        <div class="cell-label">B&ocirc;nus</div>
+        <div class="cell-val" id="bonus-val">&mdash;</div>
+      </div>
+      <div class="result-cell">
+        <div class="cell-label">Total</div>
+        <div class="cell-val" id="total-val">&mdash;</div>
+      </div>
+    </div>
+
+    <div class="result-meta">
+      <span>vs CD <span id="cd-val">&mdash;</span></span>
+      <span>Diferen&ccedil;a: <span id="diff-val">&mdash;</span></span>
+    </div>
+
+    <div class="grau-card" id="grau-card">
+      <div class="grau-label" id="grau-label">&mdash;</div>
+      <div class="grau-nome" id="grau-nome">&mdash;</div>
+      <div class="grau-desc" id="grau-desc">&mdash;</div>
+    </div>
+
+    <div class="dano-card" id="dano-card">
+      <div>
+        <div class="dano-titulo" id="dano-titulo">Dano sofrido</div>
+        <div class="dano-num" id="dano-num">&mdash;</div>
+      </div>
+      <div class="dano-formula" id="dano-formula"></div>
+    </div>
+  </div>
+</div>
+
+<div class="historico-wrap">
+  <div class="historico-header">
+    <span class="historico-titulo">Hist&oacute;rico da sess&atilde;o</span>
+    <button class="limpar-btn" onclick="limparHistorico()">Limpar</button>
+  </div>
+  <div id="historico-lista">
+    <div class="hist-vazio" id="hist-vazio">Nenhuma rolagem ainda</div>
+  </div>
+</div>
+
+<footer>Cada 5 pontos de margem = 1 grau &nbsp;&middot;&nbsp; Fra&ccedil;&otilde;es ignoradas</footer>
+
+<script>
+var historico = [];
+
+function calcGraus(diff) {
+  if (diff >= 0) return 1 + Math.floor(diff / 5);
+  return -Math.floor((-diff - 1) / 5) - 1;
+}
+
+function horaAgora() {
+  var d = new Date();
+  var h = String(d.getHours()).padStart(2, '0');
+  var m = String(d.getMinutes()).padStart(2, '0');
+  var s = String(d.getSeconds()).padStart(2, '0');
+  return h + ':' + m + ':' + s;
+}
+
+function rolar() {
+  var dado = Math.floor(Math.random() * 20) + 1;
+  var bonus = parseInt(document.getElementById('bonus').value) || 0;
+  var cd = parseInt(document.getElementById('cd').value) || 15;
+  var total = dado + bonus;
+  var diff = total - cd;
+  var graus = calcGraus(diff);
+  var emCombate = document.getElementById('modo-combate').checked;
+  var hora = horaAgora();
+
+  document.getElementById('dado-val').textContent = dado;
+  document.getElementById('bonus-val').textContent = (bonus >= 0 ? '+' : '') + bonus;
+  document.getElementById('total-val').textContent = total;
+  document.getElementById('cd-val').textContent = cd;
+  document.getElementById('diff-val').textContent = (diff >= 0 ? '+' : '') + diff;
+
+  var card = document.getElementById('grau-card');
+  var label = document.getElementById('grau-label');
+  var nome = document.getElementById('grau-nome');
+  var desc = document.getElementById('grau-desc');
+  card.className = 'grau-card';
+
+  var grauTexto, tipoClasse, dano = null;
+
+  if (graus > 0) {
+    card.classList.add('success');
+    tipoClasse = 'hs';
+    var nat = dado === 20 ? ' — Natural 20!' : '';
+    label.textContent = 'Sucesso' + nat;
+    grauTexto = graus + (graus === 1 ? ' Grau de Sucesso' : ' Graus de Sucesso');
+    nome.textContent = grauTexto;
+    desc.textContent = diff === 0 ? 'Passou exatamente na CD' : 'Superou a CD por ' + diff + ' pontos';
+  } else {
+    var absG = Math.abs(graus);
+    var nat2 = dado === 1 ? ' — Natural 1!' : '';
+    label.textContent = 'Falha' + nat2;
+    grauTexto = absG + (absG === 1 ? ' Grau de Falha' : ' Graus de Falha');
+    nome.textContent = grauTexto;
+    desc.textContent = 'Ficou abaixo da CD por ' + Math.abs(diff) + ' pontos';
+    if (absG >= 2) {
+      card.classList.add('danger');
+      tipoClasse = 'hd';
+    } else {
+      card.classList.add('warn');
+      tipoClasse = 'hw';
+    }
+  }
+
+  var danoCard = document.getElementById('dano-card');
+
+  if (emCombate) {
+    var baseDano = cd - 15;
+    var absGraus = Math.abs(graus);
+    dano = graus > 0 ? 0 : baseDano * absGraus;
+
+    danoCard.className = 'dano-card ' + (dano === 0 ? 'sem-dano' : 'com-dano');
+    danoCard.style.display = 'flex';
+
+    document.getElementById('dano-titulo').textContent = dano === 0 ? 'Sem dano' : 'Dano sofrido';
+    document.getElementById('dano-num').textContent = dano;
+
+    if (dano === 0) {
+      document.getElementById('dano-formula').textContent = 'Sucesso — nenhum dano';
+    } else {
+      document.getElementById('dano-formula').textContent =
+        'Base: CD ' + cd + ' − 15 = ' + baseDano + '\n' +
+        baseDano + ' x ' + absGraus + (absGraus === 1 ? ' grau' : ' graus') + ' = ' + dano;
+    }
+  } else {
+    danoCard.style.display = 'none';
+  }
+
+  document.getElementById('resultado').style.display = 'block';
+
+  // Adicionar ao historico
+  historico.unshift({
+    hora: hora,
+    dado: dado,
+    bonus: bonus,
+    total: total,
+    cd: cd,
+    diff: diff,
+    graus: graus,
+    grauTexto: grauTexto,
+    tipoClasse: tipoClasse,
+    dano: dano,
+    emCombate: emCombate
+  });
+
+  renderHistorico();
+}
+
+function renderHistorico() {
+  var lista = document.getElementById('historico-lista');
+  var vazio = document.getElementById('hist-vazio');
+
+  if (historico.length === 0) {
+    lista.innerHTML = '<div class="hist-vazio" id="hist-vazio">Nenhuma rolagem ainda</div>';
+    return;
+  }
+
+  var html = '';
+  for (var i = 0; i < historico.length; i++) {
+    var h = historico[i];
+    var bonusStr = (h.bonus >= 0 ? '+' : '') + h.bonus;
+    var diffStr = (h.diff >= 0 ? '+' : '') + h.diff;
+    var detalhe = 'd20(' + h.dado + ') ' + bonusStr + ' = ' + h.total + ' vs CD ' + h.cd + ' (' + diffStr + ')';
+    var danoHtml = '';
+    if (h.emCombate && h.dano !== null) {
+      danoHtml = '<div class="hist-dano">' + (h.dano === 0 ? 'Sem dano' : 'Dano: ' + h.dano) + '</div>';
+    }
+    html += '<div class="hist-item ' + h.tipoClasse + '">' +
+      '<div class="hist-hora">' + h.hora + '</div>' +
+      '<div class="hist-meio">' +
+        '<div class="hist-grau">' + h.grauTexto + '</div>' +
+        '<div class="hist-detalhe">' + detalhe + '</div>' +
+      '</div>' +
+      '<div>' +
+        '<div class="hist-total">' + h.total + '</div>' +
+        danoHtml +
+      '</div>' +
+    '</div>';
+  }
+  lista.innerHTML = html;
+}
+
+function limparHistorico() {
+  historico = [];
+  renderHistorico();
+}
+
+document.addEventListener('keydown', function(e) { if (e.key === 'Enter') rolar(); });
+</script>
+</body>
+</html>
